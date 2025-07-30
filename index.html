@@ -2,10 +2,49 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js-speech/0.0.3/p5.speech.js"></script>
+  <!-- Load p5.js from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+  
+  <!-- Load p5.speech with fallback -->
+  <script>
+    function loadScript(src, callback) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = callback;
+      script.onerror = () => {
+        console.warn(`${src} failed to load, using browser's native speech API`);
+        window.useNativeSpeech = true;
+      };
+      document.head.appendChild(script);
+    }
+
+    // Try loading p5.speech, fallback to native API if fails
+    loadScript('https://unpkg.com/p5.js-speech@0.0.3/lib/p5.speech.js', () => {
+      console.log('p5.speech loaded successfully');
+    });
+  </script>
+  
+  <!-- Your main sketch -->
   <script src="sketch.js"></script>
+  
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #mic-btn { 
+      position: fixed; 
+      bottom: 20px; 
+      left: 50%; 
+      transform: translateX(-50%);
+      padding: 10px 20px;
+      background: #FF5500;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 16px;
+    }
+  </style>
 </head>
 <body>
+  <!-- Mic button for mobile compatibility -->
+  <button id="mic-btn">🎤 Hold to Speak</button>
 </body>
 </html>
