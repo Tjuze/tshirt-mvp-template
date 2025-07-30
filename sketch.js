@@ -7,7 +7,7 @@ let isImageLoaded = false;
 
 function preload() {
   shirtImg = loadImage(
-    'assets/shirt.png',
+    'C:/Users/User/tshirt-designer/assets/shirt.png',
     () => {
       console.log('Image loaded successfully');
       isImageLoaded = true;
