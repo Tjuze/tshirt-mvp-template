@@ -1,54 +1,59 @@
 let design = "";
 let mic;
 let isListening = false;
+let shirtImg;
+let textColor = '#121F17'; // Your brand color
+let textSizeVal = 24;
+
+function preload() {
+  shirtImg = loadImage('assets/shirt.png'); // Load shirt template
+}
 
 function setup() {
-  createCanvas(windowWidth, windowHeight - 60); // Space for button
+  createCanvas(windowWidth, windowHeight - 60);
   
-  // Check if p5.speech loaded or fallback to native API
+  // Speech recognition setup (unchanged)
   if (typeof p5.SpeechRec !== 'undefined' && !window.useNativeSpeech) {
-    console.log("Using p5.speech");
     mic = new p5.SpeechRec('en-US', gotSpeech);
     mic.continuous = true;
-    mic.onError = (err) => console.error("p5.speech error:", err);
   } else {
-    console.log("Using native Web Speech API");
     mic = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     mic.lang = 'en-US';
     mic.continuous = true;
     mic.onresult = gotSpeech;
-    mic.onerror = (err) => console.error("Native API error:", err);
   }
 
-  // Mobile-friendly mic button
+  // Mic button
   const micBtn = document.getElementById('mic-btn');
-  micBtn.ontouchstart = micBtn.onmousedown = () => {
-    mic.start();
-    isListening = true;
-    micBtn.textContent = "🔴 Listening...";
-  };
-  
-  micBtn.ontouchend = micBtn.onmouseup = () => {
-    mic.stop();
-    isListening = false;
-    micBtn.textContent = "🎤 Hold to Speak";
-  };
+  micBtn.ontouchstart = micBtn.onmousedown = () => mic.start();
+  micBtn.ontouchend = micBtn.onmouseup = () => mic.stop();
 }
 
 function gotSpeech(result) {
-  // Handle both p5.speech and native API response formats
   const transcript = result.resultValue ? result.resultString : result.results[0][0].transcript;
   design = transcript;
-  console.log("Heard:", design);
 }
 
 function draw() {
   background(240);
-  textSize(24);
-  textAlign(CENTER);
-  text("Describe your t-shirt design:", width/2, 40);
   
-  textSize(18);
-  textAlign(LEFT);
-  text(design, 20, 80, width - 40);
+  // Draw shirt (centered)
+  const shirtAspect = shirtImg.height / shirtImg.width;
+  const shirtWidth = width * 0.8;
+  const shirtHeight = shirtWidth * shirtAspect;
+  image(
+    shirtImg, 
+    width/2 - shirtWidth/2, 
+    height/2 - shirtHeight/2, 
+    shirtWidth, 
+    shirtHeight
+  );
+  
+  // Draw design text
+  if (design) {
+    fill(textColor);
+    textSize(textSizeVal);
+    textAlign(CENTER, CENTER);
+    text(design, width/2, height/2);
+  }
 }
