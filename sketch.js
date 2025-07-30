@@ -1,26 +1,29 @@
-
 let design = "";
 let mic;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(400, 400);
   
-  // Voice recognition setup
+  // Verify library loaded
+  if (typeof p5.SpeechRec === 'undefined') {
+    console.error("p5.speech not loaded!");
+    return;
+  }
+
   mic = new p5.SpeechRec('en-US', gotSpeech);
-  mic.continuous = true;
+  mic.onError = console.error; // Log any mic errors
   mic.start();
 }
 
 function gotSpeech() {
   if (mic.resultValue) {
     design = mic.resultString;
-    console.log(design); // Debug voice input
+    console.log("Heard:", design);
   }
 }
 
 function draw() {
   background(240);
-  textSize(20);
-  text("Say your t-shirt design:", 20, 40);
-  text(design, 20, 80); // Show voice input
+  text("Speak your design:", 20, 40);
+  text(design, 20, 80);
 }
