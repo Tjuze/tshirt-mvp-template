@@ -7,7 +7,7 @@ let isImageLoaded = false;
 
 function preload() {
   shirtImg = loadImage(
-    'C:/Users/User/tshirt-designer/assets/shirt.png',
+    'https://github.com/Tjuze/tshirt-mvp/tree/main/assets/shirt.png',
     () => {
       console.log('Image loaded successfully');
       isImageLoaded = true;
