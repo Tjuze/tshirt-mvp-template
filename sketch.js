@@ -1,19 +1,18 @@
 let design = "";
 let mic;
-let isListening = false;
 let shirtImg;
-let textColor = '#121F17'; // Your brand color
+let textColor = '#121F17';
 let textSizeVal = 24;
 
 function preload() {
-  shirtImg = loadImage('assets/shirt.png'); // Load shirt template
+  shirtImg = loadImage('assets/shirt.png');
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight - 60);
+  createCanvas(windowWidth, windowHeight);
   
-  // Speech recognition setup (unchanged)
-  if (typeof p5.SpeechRec !== 'undefined' && !window.useNativeSpeech) {
+  // Speech Recognition setup
+  if (typeof p5.SpeechRec !== 'undefined') {
     mic = new p5.SpeechRec('en-US', gotSpeech);
     mic.continuous = true;
   } else {
@@ -25,27 +24,50 @@ function setup() {
 
   // Mic button
   const micBtn = document.getElementById('mic-btn');
-  micBtn.ontouchstart = micBtn.onmousedown = () => mic.start();
-  micBtn.ontouchend = micBtn.onmouseup = () => mic.stop();
+  micBtn.ontouchstart = micBtn.onmousedown = () => {
+    mic.start();
+    micBtn.textContent = "🔴 Listening...";
+  };
+  
+  micBtn.ontouchend = micBtn.onmouseup = () => {
+    mic.stop();
+    micBtn.textContent = "🎤 Hold to Speak";
+  };
+
+  // Controls
+  document.getElementById('text-color').addEventListener('input', (e) => {
+    textColor = e.target.value;
+  });
+
+  document.getElementById('text-size').addEventListener('input', (e) => {
+    textSizeVal = parseInt(e.target.value);
+    document.getElementById('size-value').textContent = textSizeVal;
+  });
+
+  // Save button
+  document.getElementById('share-btn').addEventListener('click', () => {
+    saveCanvas('tshirt-design', 'png');
+  });
 }
 
 function gotSpeech(result) {
   const transcript = result.resultValue ? result.resultString : result.results[0][0].transcript;
   design = transcript;
+  console.log("Design:", design);
 }
 
 function draw() {
   background(240);
   
-  // Draw shirt (centered)
-  const shirtAspect = shirtImg.height / shirtImg.width;
+  // Draw shirt (centered with aspect ratio)
+  const shirtRatio = shirtImg.height / shirtImg.width;
   const shirtWidth = width * 0.8;
-  const shirtHeight = shirtWidth * shirtAspect;
+  const shirtHeight = shirtWidth * shirtRatio;
   image(
-    shirtImg, 
-    width/2 - shirtWidth/2, 
-    height/2 - shirtHeight/2, 
-    shirtWidth, 
+    shirtImg,
+    width/2 - shirtWidth/2,
+    height/2 - shirtHeight/2,
+    shirtWidth,
     shirtHeight
   );
   
@@ -56,4 +78,8 @@ function draw() {
     textAlign(CENTER, CENTER);
     text(design, width/2, height/2);
   }
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
 }
